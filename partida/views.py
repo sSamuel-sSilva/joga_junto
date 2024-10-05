@@ -117,9 +117,6 @@ def disponibilidade(data, horario_inicio, horario_fim, ct, modalidade):
             if (horario_fim > partida.horario_inicio) or (horario_inicio < partida.horario_fim):
                 quantidade_partidas_dia = quantidade_partidas_dia + 1
 
-    print(f'Quantidade quadras: {quantidade_quadras}')
-    print(f'Quantidade partidas: {quantidade_partidas_dia}')
-
     if quantidade_quadras > quantidade_partidas_dia:
         return 1
     elif quantidade_quadras <= 0:

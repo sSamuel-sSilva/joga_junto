@@ -10,7 +10,7 @@ class Modalidade(models.Model):
 
 class CentroPoliesportivo(models.Model):
     nome = models.CharField(max_length=60)
-    cep = models.CharField(max_length=11, unique=True)
+    cep = models.CharField(max_length=11, unique=True) #tirar
     numero = models.IntegerField()
     quantidade_quadras = models.IntegerField()
     contato_dono = models.CharField(max_length=11)
@@ -38,4 +38,3 @@ class PeriodoFuncionamento(models.Model):
     dia_da_semana = models.CharField(max_length=10)
     horario_abertura = models.TimeField()
     horario_fechamento = models.TimeField()
-
