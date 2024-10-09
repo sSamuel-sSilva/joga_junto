@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import ModalidadeListCreate, ModalidadeRetrieveUpdateDestroy, CentroPoliesportivoListCreate, CentroPoliesportivoRetrieveUpdateDestroy, PeriodoFuncionamentoListCreate, PeriodoFuncionamentoRetrieveUpdateDestroy, QuadraListCreate, QuadraRetrieveUpdateDestroy, AuxPartidaListCreate, AuxPartidaSerializersRetrieveUpdateDestroy, ctpol_list_create
+from .views import ModalidadeListCreate, ModalidadeRetrieveUpdateDestroy, CentroPoliesportivoListCreate, CentroPoliesportivoRetrieveUpdateDestroy, PeriodoFuncionamentoListCreate, PeriodoFuncionamentoRetrieveUpdateDestroy, QuadraListCreate, QuadraRetrieveUpdateDestroy, AuxPartidaListCreate, AuxPartidaSerializersRetrieveUpdateDestroy, ctpol_list_create, ctpol_detail
 
 urlpatterns = [
     path('modalidade/', ModalidadeListCreate.as_view(), name='modalidade-list-create'),
@@ -17,6 +17,6 @@ urlpatterns = [
     path('aux_partida/', AuxPartidaListCreate.as_view(), name='aux_partida-list-create'),
     path('aux_partida/<int:pk>/', AuxPartidaSerializersRetrieveUpdateDestroy.as_view(), name='aux_partida-rud'),
 
-    path('ctpol_list_create/', view=ctpol_list_create, name='ctpol_list_create')
-
+    path('ctpol_list_create/', view=ctpol_list_create, name='ctpol_list_create'),
+    path('ctpol_detail/<int:pk>', view=ctpol_detail, name='ctpol_detail')
 ]    

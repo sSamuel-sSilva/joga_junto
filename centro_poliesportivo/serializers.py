@@ -19,7 +19,7 @@ class CentroPoliesportivoSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class QuadraSerializer(serializers.ModelSerializer):
+class QuadraSerializer(serializers.ModelSerializer):    
     class Meta:
         model = Quadra
         fields = '__all__'

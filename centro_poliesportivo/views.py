@@ -6,6 +6,7 @@ import json
 from django.http import Http404, HttpResponse
 from .models import Modalidade, PeriodoFuncionamento, CentroPoliesportivo, Quadra, AuxPartida
 from .serializers import ModalidadeSerializer, PeriodoFuncionamentoSerializer, CentroPoliesportivoSerializer, QuadraSerializer, AuxPartidaSerializer
+from datetime import datetime
 from django.views.decorators.csrf import csrf_exempt
 
 
@@ -229,11 +230,62 @@ class AuxPartidaSerializersRetrieveUpdateDestroy(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-# @csrf_exempt
+
 @api_view(['GET', 'POST'])
 def ctpol_list_create(request):
     if request.method == 'GET':
-        return Response({"message": "fazendo ainda"})
+        ctpols = CentroPoliesportivo.objects.all()
+        quant_ctpol = len(ctpols)
+        json_ctpols = []
+
+
+        for i in range(quant_ctpol):
+            qs_quadras = Quadra.objects.filter(ct_pol=ctpols[i].pk)
+            qs_periodos_func = PeriodoFuncionamento.objects.filter(ct_pol=ctpols[i].pk)
+            qs_aux_partida = AuxPartida.objects.filter(ct_pol=ctpols[i].pk)
+            
+            quadras = [
+                    q.modalidade.modalidade for q in qs_quadras
+            ]
+
+            periodos_func = [
+                {
+                    "dia_da_semana": pf.dia_da_semana,
+                    "horario_abertura": pf.horario_abertura.strftime("%H:%M:%S"),
+                    "horario_fechamento": pf.horario_fechamento.strftime("%H:%M:%S")
+                }
+
+                for pf in qs_periodos_func 
+            ]
+
+            aux_partida = [
+                {
+                    "modalidade" : ap.modalidade.modalidade,
+                    "quantidade_minima": ap.quantidade_minima,
+                    "valor_final": ap.valor_final
+                }
+                for ap in qs_aux_partida
+            ]
+
+            ctpol_atual = {
+                "ctpol": {
+                    "nome": ctpols[i].nome,
+                    "cep": ctpols[i].cep,
+                    "numero": ctpols[i].numero,
+                    "quantidade_quadras": ctpols[i].quantidade_quadras,
+                    "contato_dono": ctpols[i].contato_dono,
+                    "descricao": ctpols[i].descricao,
+                    "avaliacao": ctpols[i].avaliacao,
+                },
+
+                "quadras": quadras,
+                "periodos_func": periodos_func,
+                "aux_partida": aux_partida
+            }
+
+            json_ctpols.append(ctpol_atual)
+
+        return Response(json_ctpols)
 
     elif request.method == 'POST':
         data = json.loads(request.body)
@@ -316,3 +368,135 @@ def ctpol_list_create(request):
 
         return Response({"status": "cadastrado com sucesso"}, status=status.HTTP_201_CREATED)
 
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def ctpol_detail(request, pk):
+
+    if request.method == 'GET':
+        ct_pol = get_object(pk, True)
+        return Response(ct_pol)
+
+
+    if request.method == 'PUT':
+        ct_pol_request = request.data
+        
+        ct_pol = get_object(pk, True)
+
+        s_ct_pol = CentroPoliesportivoSerializer(ct_pol['ct_pol'], data=ct_pol_request['ct_pol'])
+        if not s_ct_pol.is_valid():
+            print("ERRO S_CT_POL UPDATE")
+            Response(s_ct_pol.error, status=status.HTTP_400_BAD_REQUEST)
+        s_ct_pol.save()
+
+        # update das quadras
+        # quadras_request = []
+        # for q in Quadra.objects.filter(ct_pol=pk):
+        #     quadras_request.append(q)
+        
+        for i in len(ct_pol['quadras']):
+            s_quadra = QuadraSerializer(ct_pol['quadras'][i], data=list(Quadra.objects.filter(ct_pol=pk))[i])
+            if not s_quadra.is_valid():
+                print(f"ERRO S_QUADRA {i} UPDATE")
+                Response(s_quadra.error, status=status.HTTP_400_BAD_REQUEST)
+            s_quadra.save()
+
+
+        #update das period_func
+        # periodo_func_request = []
+        # for pf in PeriodoFuncionamento.objects.filter(ct_pol=pk):
+        #     periodo_func_request.append(pf)
+
+        for i in len(ct_pol['periodos_func']):
+            s_periodo_func = PeriodoFuncionamentoSerializer(ct_pol['periodos_func'][i], data=list(PeriodoFuncionamento.objects.filter(ct_pol=pk))[i])
+            if not s_periodo_func.is_valid():
+                print(f"ERRO S_PERIODO_FUNC {i} UPDATE")
+                Response(s_periodo_func.error, status=status.HTTP_400_BAD_REQUEST)
+            s_periodo_func.save()
+    
+
+        #update_das aux_partida
+        # aux_partida_request = []
+        # for ap in AuxPartida.objects.filter(ct_pol=ap):
+        #     aux_partida_request.append(ap)
+
+        for i in len(ct_pol['aux_partida']):
+            s_aux_partida = AuxPartidaSerializer(ct_pol['aux_partida'][i], data=list(AuxPartida.objects.filter(ct_pol=pk))[i])
+            if not s_aux_partida.is_valid():
+                print(f"ERRO S_AUX_PARTIDA {i} UPDATE")
+                Response(s_aux_partida.error, status=status.HTTP_400_BAD_REQUEST)
+            s_aux_partida.save()
+
+        obj_json = get_object(pk, True)
+        return Response(obj_json)
+        
+
+def get_object(pk, get=False):
+    obj_json = {}
+    quadras = []
+    periodos_funcs = []
+    aux_partidas = []
+
+    if get:
+        try:
+            ct_pol = CentroPoliesportivo.objects.get(pk=pk)
+        except CentroPoliesportivo.DoesNotExist:
+            raise Http404
+        
+        obj_json["ct_pol"] = {
+            "nome": ct_pol.nome,
+            "cep": ct_pol.cep,
+            "numero": ct_pol.numero,
+            "quantidade_quadras": ct_pol.quantidade_quadras,
+            "contato_dono": ct_pol.contato_dono,
+            "descricao": ct_pol.descricao,
+            "avaliacao": ct_pol.avaliacao,
+        }
+
+        for q in list(Quadra.objects.filter(ct_pol=pk)):
+                quadras.append(q.modalidade.modalidade)
+
+
+        obj_json["quadras"] = quadras
+
+        obj_json["periodos_func"] = [   
+            {
+                "dia_da_semana": pf.dia_da_semana,
+                "horario_abertura": pf.horario_abertura.strftime("%H:%M:%S"),
+                "horario_fechamento": pf.horario_fechamento.strftime("%H:%M:%S")
+            } for pf in list(PeriodoFuncionamento.objects.filter(ct_pol=pk) )
+        ]
+
+        obj_json["aux_partida"] = [
+                {
+                    "modalidade" : ap.modalidade.modalidade,
+                    "quantidade_minima": ap.quantidade_minima,
+                    "valor_final": ap.valor_final
+                }
+                for ap in list(AuxPartida.objects.filter(ct_pol=pk))
+            ]
+        
+        return obj_json
+    
+
+    try:
+        ct_pol = CentroPoliesportivo.objects.get(pk=pk)
+    except CentroPoliesportivo.DoesNotExist:
+        raise Http404
+    
+    obj_json["ct_pol"] = ct_pol
+
+
+
+    obj_json["quadras"] = list(Quadra.objects.filter(ct_pol=pk))
+
+    obj_json["periodos_func"] = list(PeriodoFuncionamento.objects.filter(ct_pol=pk))
+
+    obj_json["aux_partida"] = list(AuxPartida.objects.filter(ct_pol=pk))
+    
+    return obj_json
+        
+        
+        
+        
+# TENHO QUE CONSEGUIR COBRIR A POSSIBILIDADE DE QUERER ELIMINAR UM HORARIO DE FUNCIONAMENTO , AUX_PARTIDA(MODALIDADE REMOVIDA DO CTPOL), QUADRA
+# E A DE O CARA QUERER CRIAR ALGUM DESSES A MAIS
