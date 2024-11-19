@@ -436,9 +436,6 @@ def ctpol_detail(request, pk):
         ct_pol = CentroPoliesportivo.objects.get(pk=pk)
         ct_pol_request['ct_pol']["avaliacao"] = ct_pol.avaliacao
 
-        # residencia = CidadeEstado.objects.get(pk=request.data["ct_pol"]["residencia"]);
-        # ct_pol_request["ct_pol"]["residencia"] = residencia.pk
-
         s_ct_pol = CentroPoliesportivoSerializer(ct_pol, data=ct_pol_request['ct_pol'])
         if not s_ct_pol.is_valid():
             return Response(s_ct_pol.errors, status=status.HTTP_400_BAD_REQUEST)
