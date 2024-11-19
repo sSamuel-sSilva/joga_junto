@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import ModalidadeListCreate, ModalidadeRetrieveUpdateDestroy, CentroPoliesportivoListCreate, CentroPoliesportivoRetrieveUpdateDestroy, PeriodoFuncionamentoListCreate, PeriodoFuncionamentoRetrieveUpdateDestroy, QuadraListCreate, QuadraRetrieveUpdateDestroy, AuxPartidaListCreate, AuxPartidaSerializersRetrieveUpdateDestroy, ctpol_list_create, ctpol_detail
+from .views import ModalidadeListCreate, ModalidadeRetrieveUpdateDestroy, CentroPoliesportivoListCreate, CentroPoliesportivoRetrieveUpdateDestroy, PeriodoFuncionamentoListCreate, PeriodoFuncionamentoRetrieveUpdateDestroy, QuadraListCreate, QuadraRetrieveUpdateDestroy, AuxPartidaListCreate, AuxPartidaSerializersRetrieveUpdateDestroy, ctpol_list_create, ctpol_detail, CidadeEstadoListCreate, CidadeEstadoRetrieveUpdateDestroy
 
 urlpatterns = [
     path('modalidade/', ModalidadeListCreate.as_view(), name='modalidade-list-create'),
@@ -17,6 +17,9 @@ urlpatterns = [
     path('aux_partida/', AuxPartidaListCreate.as_view(), name='aux_partida-list-create'),
     path('aux_partida/<int:pk>/', AuxPartidaSerializersRetrieveUpdateDestroy.as_view(), name='aux_partida-rud'),
 
+    path('cidade_estado/', CidadeEstadoListCreate.as_view(), name='cidade_estado-list-create'),
+    path('cidade_estado/<int:pk>/', CidadeEstadoRetrieveUpdateDestroy.as_view(), name='cidade_estado-rud'),
+    
     path('ctpol_list_create/', view=ctpol_list_create, name='ctpol_list_create'),
     path('ctpol_detail/<int:pk>', view=ctpol_detail, name='ctpol_detail')
 ]    

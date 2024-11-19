@@ -1,9 +1,15 @@
 from rest_framework import serializers
-from .models import Modalidade, PeriodoFuncionamento, CentroPoliesportivo, Quadra, AuxPartida
+from .models import Modalidade, PeriodoFuncionamento, CentroPoliesportivo, Quadra, AuxPartida, CidadeEstado
 
 class ModalidadeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Modalidade
+        fields = '__all__'
+
+
+class CidadeEstadoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CidadeEstado
         fields = '__all__'
 
 
