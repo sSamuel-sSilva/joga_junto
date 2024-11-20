@@ -50,7 +50,6 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
 
         Usuario.objects.create(user=user, **usuario)
-        token, created = Token.objects.get_or_create(user=user)
 
         if nome_grupo:
             try:
@@ -59,10 +58,8 @@ class UserSerializer(serializers.ModelSerializer):
             except:
                 raise serializers.ValidationError(f"Grupo inexistente")
 
-        return {
-            "user": user,
-            "token": token.key
-        }
+        return user
+        
         
         # except IntegrityError as erro:
         #     raise serializers.ValidationError(f"Erro registro usario: {erro}")
