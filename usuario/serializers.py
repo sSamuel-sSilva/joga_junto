@@ -1,6 +1,7 @@
-from django.db import IntegrityError
+from django.contrib.auth.models import Group
 from .models import Usuario, UsuarioEsportes, User
 from rest_framework import serializers
+from rest_framework.authtoken.models import Token
     
 
 class UsuarioSerializer(serializers.ModelSerializer):
@@ -17,15 +18,16 @@ class UsuarioEsportesSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     usuario = UsuarioSerializer()
+    grupo = serializers.CharField(write_only=True, required=False)
     
     class Meta:
         model = User
-        fields = ['id', 'username', 'password', 'usuario']
+        fields = ['id', 'username', 'password', 'usuario', 'grupo']
 
     def create(self, validated_data):
         usuario = validated_data.pop('usuario')
 
-        # try:
+        nome_grupo = validated_data.pop('grupo', None)
         user = User.objects.create(
                 username=validated_data.get('username'),
                 email=usuario.get('email')
@@ -35,7 +37,19 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
 
         Usuario.objects.create(user=user, **usuario)
-        return user
+        token, created = Token.objects.get_or_create(user=user)
+
+        if nome_grupo:
+            try:
+                grupo = Group.objects.get(name=nome_grupo)
+                user.groups.add(grupo)
+            except:
+                raise serializers.ValidationError(f"Grupo inexistente")
+
+        return {
+            "user": user,
+            "token": token.key
+        }
         
         # except IntegrityError as erro:
         #     raise serializers.ValidationError(f"Erro registro usario: {erro}")

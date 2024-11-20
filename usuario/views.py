@@ -1,7 +1,5 @@
-from django.db import IntegrityError
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.authtoken.models import Token
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, permission_classes
@@ -19,11 +17,16 @@ class RegisterView(APIView):
         if s_user.is_valid():
             
             try:
-                user = s_user.save()
-                Token.objects.create(user=user)
+                data = s_user.save()
+                return Response({
+                    "user": {
+                        "id": data["user"].id,
+                        "username": data["user"].username,
+                        "email": data["user"].email,
+                    },
+                    "token": data["token"]
+                }, status=status.HTTP_201_CREATED)
              
-                return Response({"Sitauação": "Cadastro realizado com sucesso."}, status=status.HTTP_201_CREATED)
-            
             except serializers.ValidationError as erro:
                 return Response({"Erro no cadastro": erro}, status=status.HTTP_400_BAD_REQUEST)
 
