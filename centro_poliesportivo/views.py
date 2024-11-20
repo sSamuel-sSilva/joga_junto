@@ -7,8 +7,8 @@ from rest_framework.decorators import api_view, permission_classes
 import json
 from django.http import Http404
 from .models import Modalidade, PeriodoFuncionamento, CentroPoliesportivo, Quadra, AuxPartida, CidadeEstado
-from .serializers import ModalidadeSerializer, PeriodoFuncionamentoSerializer, CentroPoliesportivoSerializer, QuadraSerializer, AuxPartidaSerializer, CidadeEstadoSerializer
-from usuario.serializers import UsuarioCentroPoliesportivoSerializer
+from .serializers import ModalidadeSerializer, PeriodoFuncionamentoSerializer, CentroPoliesportivoSerializer, QuadraSerializer, AuxPartidaSerializer
+from usuario.serializers import UsuarioCentroPoliesportivoSerializer, CidadeEstadoSerializer
 from django.views.decorators.csrf import csrf_exempt
 from usuario.models import UsuarioCentroPoliesportivo
 
@@ -279,14 +279,9 @@ def ctpol_list_create(request):
 
             s_periodos_func.save()
 
-        print(request.user.id)
-        print(id_ct_pol)
-
-
         s_user_ctpol = UsuarioCentroPoliesportivoSerializer(data=
                                                             {"user": request.user.id,
-                                                             "ctpol": id_ct_pol})
-        
+                                                             "ctpol": id_ct_pol})    
         if not s_user_ctpol.is_valid():
             print(f"ERRO RELAÇÂO USUARIO-CTPOL")
             return Response(s_periodos_func.errors, status=status.HTTP_400_BAD_REQUEST)

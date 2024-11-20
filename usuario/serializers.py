@@ -1,5 +1,5 @@
 from django.contrib.auth.models import Group
-from .models import Usuario, UsuarioEsportes, UsuarioCentroPoliesportivo, User
+from .models import Usuario, UsuarioEsportes, UsuarioCentroPoliesportivo, User, CidadeEstado
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
     
@@ -13,6 +13,12 @@ class UsuarioSerializer(serializers.ModelSerializer):
 class UsuarioEsportesSerializer(serializers.ModelSerializer):
     class Meta:
         model = UsuarioEsportes
+        fields = '__all__'
+
+
+class CidadeEstadoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CidadeEstado
         fields = '__all__'
 
 

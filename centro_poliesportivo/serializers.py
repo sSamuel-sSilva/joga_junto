@@ -7,12 +7,6 @@ class ModalidadeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class CidadeEstadoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CidadeEstado
-        fields = '__all__'
-
-
 class PeriodoFuncionamentoSerializer(serializers.ModelSerializer):
     class Meta:
         model = PeriodoFuncionamento
