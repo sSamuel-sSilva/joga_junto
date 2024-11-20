@@ -1,13 +1,14 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
 from rest_framework import status
-from rest_framework.permissions import AllowAny
+from rest_framework import permissions
 from rest_framework.decorators import api_view, permission_classes
-
+from django.contrib.auth import authenticate
 from .serializers import UserSerializer, UsuarioSerializer, serializers
 
 class RegisterView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request):
         s_user = UserSerializer(data=request.data)
@@ -33,3 +34,19 @@ class RegisterView(APIView):
 
         else:
             return Response({"Erro": s_user.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class loginView(APIView):
+    permission_classes=[permissions.AllowAny]
+    
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+
+        user = authenticate(username=username, password=password)
+        
+        if user:
+            token, _=Token.objects.get_or_create(user=user)
+            return Response({'token': token.key, 'user': UserSerializer(user).data})
+        else:
+            return Response({"erro": "credenciais inválidas"}, status=status.HTTP_401_UNAUTHORIZED)

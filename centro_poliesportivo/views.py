@@ -1,16 +1,16 @@
-from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework import generics
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 import json
-from django.http import Http404, HttpResponse
+from django.http import Http404
 from .models import Modalidade, PeriodoFuncionamento, CentroPoliesportivo, Quadra, AuxPartida, CidadeEstado
 from .serializers import ModalidadeSerializer, PeriodoFuncionamentoSerializer, CentroPoliesportivoSerializer, QuadraSerializer, AuxPartidaSerializer, CidadeEstadoSerializer
-from datetime import datetime
+from usuario.serializers import UsuarioCentroPoliesportivoSerializer
 from django.views.decorators.csrf import csrf_exempt
+from usuario.models import UsuarioCentroPoliesportivo
 
 
 class ModalidadeListCreate(generics.ListCreateAPIView):
@@ -103,11 +103,29 @@ class AuxPartidaSerializersRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyA
 
 
 
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 @api_view(['GET', 'POST'])
 def ctpol_list_create(request):
+    if not request.user.groups.filter(name="dono_centro_poliesportivo").exists():
+        return Response({"Situação": "Permissão negada."})
+
     if request.method == 'GET':
-        ctpols = CentroPoliesportivo.objects.all()
+        user = request.user
+
+        ctpols_user = UsuarioCentroPoliesportivo.objects.filter(user=user.id)
+        
+        if not ctpols_user:
+            return Response({"Situação": "Usuario não possui Centros Poliesportivos cadastrados."})
+        
+        ctpols = []
+
+        for c in ctpols_user:
+            ct = CentroPoliesportivo.objects.get(pk=c.ctpol.pk)
+            ctpols.append(ct)
+
+        
+
+
         quant_ctpol = len(ctpols)
         json_ctpols = []
 
@@ -162,7 +180,7 @@ def ctpol_list_create(request):
                     "numero": ctpols[i].numero,
                     "rua": ctpols[i].rua,
                     "quantidade_quadras": ctpols[i].quantidade_quadras,
-                    "contato_dono": ctpols[i].contato_dono,
+                    "contato": ctpols[i].contato,
                     "descricao": ctpols[i].descricao,
                     "avaliacao": ctpols[i].avaliacao,
                 },
@@ -190,7 +208,7 @@ def ctpol_list_create(request):
             "numero": ct_pol_json.get('numero'),
             "rua": ct_pol_json.get('rua'),
             "quantidade_quadras": len(quadras_json),
-            "contato_dono": ct_pol_json.get('contato_dono'),
+            "contato": ct_pol_json.get('contato'),
             "descricao": ct_pol_json.get('descricao'),
             "avaliacao": 0
         }
@@ -261,13 +279,29 @@ def ctpol_list_create(request):
 
             s_periodos_func.save()
 
-        #ajeitar para retornar o json com os dados do post
+        print(request.user.id)
+        print(id_ct_pol)
+
+
+        s_user_ctpol = UsuarioCentroPoliesportivoSerializer(data=
+                                                            {"user": request.user.id,
+                                                             "ctpol": id_ct_pol})
+        
+        if not s_user_ctpol.is_valid():
+            print(f"ERRO RELAÇÂO USUARIO-CTPOL")
+            return Response(s_periodos_func.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        s_user_ctpol.save()
+
         return Response({"status": "cadastrado com sucesso"}, status=status.HTTP_201_CREATED)
 
 
 @permission_classes([AllowAny])
 @api_view(['GET', 'PUT', 'DELETE'])
 def ctpol_detail(request, pk):
+
+    if not request.user.groups.filter(name="dono_centro_poliesportivo").exists():
+        return Response({"Situação": "Permissão negada."})
 
     if request.method == 'GET':
         ct_pol = get_object(pk, True)
@@ -319,8 +353,13 @@ def ctpol_detail(request, pk):
     
     if request.method == 'DELETE':
         try:
+            
             ct_pol = CentroPoliesportivo.objects.get(pk=pk)
             ct_pol.delete()
+
+            ct_pol_user = UsuarioCentroPoliesportivo.objects.filter(ctpol=pk).first()
+            ct_pol_user.delete()
+
             return Response({"Deleteção": "Concluída chefe."})
         except CentroPoliesportivo.DoesNotExist:
             raise Http404
@@ -350,7 +389,7 @@ def get_object(pk, get=False):
             "numero": ct_pol.numero,
             "rua": ct_pol.rua,
             "quantidade_quadras": ct_pol.quantidade_quadras,
-            "contato_dono": ct_pol.contato_dono,
+            "contato": ct_pol.contato,
             "descricao": ct_pol.descricao,
             "avaliacao": ct_pol.avaliacao,
         }

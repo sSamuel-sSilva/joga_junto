@@ -21,7 +21,7 @@ class CentroPoliesportivo(models.Model):
     numero = models.IntegerField()
     rua = models.CharField(max_length=70)
     quantidade_quadras = models.IntegerField()
-    contato_dono = models.CharField(max_length=11)
+    contato = models.CharField(max_length=11)
     descricao = models.CharField(max_length=299)
     avaliacao = models.FloatField()
 
