@@ -106,9 +106,6 @@ class AuxPartidaSerializersRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyA
 @permission_classes([IsAuthenticated])
 @api_view(['GET', 'POST'])
 def ctpol_list_create(request):
-    if not request.user.groups.filter(name="dono_centro_poliesportivo").exists():
-        return Response({"Situação": "Permissão negada."})
-
     if request.method == 'GET':
         user = request.user
 
@@ -171,7 +168,6 @@ def ctpol_list_create(request):
                 "estado": r_modelo.estado
             } 
 
-            # print(residencia)
             ctpol_atual = {
                 "ctpol": {
                     "pk": ctpols[i].pk,
@@ -195,6 +191,9 @@ def ctpol_list_create(request):
         return Response(json_ctpols)
 
     elif request.method == 'POST':
+        if not request.user.groups.filter(name="dono_centro_poliesportivo").exists():
+            return Response({"Situação": "Permissão negada."})
+
         data = json.loads(request.body)
         
         ct_pol_json = data.get('ct_pol')
@@ -217,8 +216,6 @@ def ctpol_list_create(request):
         cidade_estado = CidadeEstado.objects.get(cidade=residencia_json['cidade'], estado=residencia_json['estado'])
         ctpol_info['residencia'] = cidade_estado.pk
         
-
-        # cadastrando o ct
         s_ct_pol = CentroPoliesportivoSerializer(data=ctpol_info)
         if not s_ct_pol.is_valid():
             print("ERRO CTPOL")
@@ -227,8 +224,6 @@ def ctpol_list_create(request):
 
         id_ct_pol = ct_pol.id
 
-
-        # cadastrando as quadras do ct
         print(len(quadras_json))
         for i in range(int(len(quadras_json['modalidade']))):
             quadra = {
@@ -243,8 +238,6 @@ def ctpol_list_create(request):
 
             s_quadra.save()
 
-
-        # # cadastrando os aux_parts
         quantidade_aux_parts = len(aux_partida_json)
         for i in range(quantidade_aux_parts):
             aux_part = {
@@ -261,8 +254,6 @@ def ctpol_list_create(request):
 
             s_aux_part.save()
 
-
-        # cadastrando os periosdos de funcionamento
         quantidade_periodos_func = len(periodos_func_json['dias_da_semana'])
         for i in range(quantidade_periodos_func):
             periodo_func = {
@@ -361,7 +352,6 @@ def ctpol_detail(request, pk):
 
 def get_object(pk, get=False):
     obj_json = {}
-    quadras = []
 
     if get:
         try:

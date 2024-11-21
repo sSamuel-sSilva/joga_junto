@@ -73,10 +73,18 @@ def visualizar_perfil(request):
         usuario = Usuario.objects.filter(user=request.user.id).first()
 
         if usuario:
+            modalidades = []
+            
             s_usuario = UsuarioSerializer(instance=usuario)
             residencia = CidadeEstado.objects.get(pk=s_usuario['residencia'].value)
             s_residencia = CidadeEstadoSerializer(instance=residencia)
 
-            return Response({"usuario": s_usuario.data, "residencia": s_residencia.data})
+            modals = UsuarioEsportes.objects.filter(usuario=usuario.id)
+
+            for m in modals:
+                modalidades.append(m.esporte.modalidade)
+
+
+            return Response({"usuario": s_usuario.data, "residencia": s_residencia.data, "modalidades": modalidades})
         else:
             return Response({"Erro":"achei não"})

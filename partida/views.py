@@ -1,14 +1,15 @@
 from django.shortcuts import render
 import json
+from rest_framework import status
 from rest_framework import generics
 from .models import AgendamentoPartida, UsuarioAgendamento
-from centro_poliesportivo.models import Quadra, AuxPartida, CentroPoliesportivo, Modalidade
+from centro_poliesportivo.models import Quadra, AuxPartida, CentroPoliesportivo, Modalidade, PeriodoFuncionamento
 from .serializers import AgendamentoPartidaSerializers, UsuarioAgendamentoSerializers
-from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse
 from datetime import datetime
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from usuario.models import Usuario, User, CidadeEstado
 
 
 class AgendamentoPartidaListCreate(generics.ListCreateAPIView):
@@ -37,89 +38,151 @@ class UsuarioAgendamentoRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIV
     serializer_class = UsuarioAgendamentoSerializers
 
 
+def dia_semana(data):
+    data_obj = datetime.strptime(data, "%Y-%m-%d")
+    dia_semana = data_obj.weekday()
+    dias_semana = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"]
+    return dias_semana[dia_semana]
 
-# @csrf_exempt
-# def cadastrar_partida(request, id):
-#     if request.method == 'GET':
-#         return HttpResponse("GET")
 
+@permission_classes([IsAuthenticated])
+@api_view(['GET', 'POST'])
+def cadastrar_listar_partida(request):
+    if not request.user.groups.filter(name="jogador").exists():
+        return Response({"Situação": "Permissão negada."})
     
-#     elif request.method == 'POST':
-#         data = json.loads(request.body)
+    if request.method == 'GET':
+        dados = []
 
-#         lider = Usario.objects.filter(pk=id)[0]
+        ctpol = request.GET.get('ctpol')
+        modalidade = request.GET.get('modalidade')
+        residencia = request.GET.get('residencia')
+
+        partidas = AgendamentoPartida.objects.all()
+        if ctpol:
+            partidas = AgendamentoPartida.objects.filter(centro_poliesportivo=ctpol)
+
+        if modalidade:
+            partidas = AgendamentoPartida.objects.filter(modalidade=modalidade)
+
+        if residencia:
+            partidas = AgendamentoPartida.objects.filter(residencia=residencia)
+
+
+        for p in partidas:
+
+            lider_info = Usuario.objects.filter(user=p.lider_partida.id).first()
+            dados.append({
+                "lider": lider_info.nome_completo,
+                "data": p.data,
+                "inicio": p.horario_inicio,
+                "fim": p.horario_termino,
+                "modalidade": p.modalidade.__str__(),
+                "residencia": p.residencia.__str__(),
+                "ct": p.centro_poliesportivo.__str__()
+            })
+
+        return Response(dados)
+
+
+    if request.method == 'POST':
+        data = request.data
+        id_user = request.user.id
+        id_ctpol = data.get('ct_pol')
+        horario_inicio_original = data.get('horario_inicio')
+        horario_fim_original = data.get('horario_fim')
+        data_partida = data.get('data')
+        modalidade = data.get('modalidade')
+        jogadores = data.get('jogadores')
+
+        horario_inicio = datetime.strptime(horario_inicio_original, "%H:%M:%S").time()
+        horario_fim = datetime.strptime(horario_fim_original, "%H:%M:%S").time()
+
+        dia_semana_partida = dia_semana(data_partida)
+
+        dia_funcionamento = PeriodoFuncionamento.objects.filter(ct_pol=id_ctpol, dia_da_semana=dia_semana_partida).first()
+
+        if not dia_funcionamento:
+            return Response({"Situação": "CT não abre esse dia."})
+
+        if horario_inicio < dia_funcionamento.horario_abertura or horario_fim > dia_funcionamento.horario_fechamento:
+            return Response({"Situação": "Horarios inválidos."})
         
-#         ct_pol = data['centro_poliesportivo']
-#         modalidade = data['modalidade']
-#         data_part = data['data']
-#         horario_inicio = data['horario_inicio']
-#         horario_termino = data['horario_termino']
-#         convidados = data['convidados']
+        quadras = Quadra.objects.filter(ct_pol=id_ctpol, modalidade=modalidade)
+        if not quadras:
+            return Response({"Situação": "O CT não possui quadras para esta modalidade."})
 
-#         res = disponibilidade(data_part, horario_inicio, horario_termino, ct_pol, modalidade)
-
-#         if (res == -2):
-#             return HttpResponse("Sem quadras para essa modalidade")
-#         elif (res == -1):
-#             return HttpResponse("Todas as quadras com essa modalidade estão ocupadas")
         
-#         aux_part = AuxPartida.objects.filter(ct_pol=ct_pol, modalidade=modalidade)[0]
+        aux_partida = AuxPartida.objects.filter(ct_pol=id_ctpol, modalidade=modalidade).first()
+        if aux_partida.quantidade_minima > len(jogadores) + 1:
+            return Response({"Situação": "Quantidade de jogadores insuficiente."})
 
-#         print(aux_part.quantidade_minima)
-#         if len(convidados) < aux_part.quantidade_minima:
-#             return HttpResponse("Jogadores Insuficientes")
-
-#         ct_pol = CentroPoliesportivo.objects.filter(id=ct_pol)[0]
-#         modalidade = Modalidade.objects.filter(id=modalidade)[0]
-
-#         agen_part = AgendamentoPartida (
-#             lider_partida=lider,
-#             centro_poliesportivo=ct_pol,
-#             modalidade=modalidade,
-#             data=data_part,
-#             horario_inicio=horario_inicio,
-#             horario_termino=horario_termino,
-#             valor_final = aux_part
-#         )
-
-#         try:
-#             agen_part.save()
-#         except Exception as e:
-#             print(f'ERRO AGENDAMENTO_PARTIDA: {e}')
-#         else:
-
-#             for convidado in convidados:
-#                 c__ = Usario.objects.filter(id=convidado)[0]
-#                 c = UsuarioAgendamento (
-#                     usuario = c__,
-#                     agendamento_partida = agen_part 
-#                 )
-
-#                 try:
-#                     c.save()
-#                 except Exception as e:
-#                     print(f'ERRO USUARIO_AGENDAMENTO: {e}')
         
-#         return HttpResponse("JOIA")
+        partidas_do_dia = AgendamentoPartida.objects.filter(centro_poliesportivo=id_ctpol, modalidade=modalidade, data=data_partida)
+        if partidas_do_dia:
+            for partida in partidas_do_dia:
+                if (partida.horario_inicio <= horario_inicio <= partida.horario_termino) or (partida.horario_inicio <= horario_fim <= partida.horario_termino) or (horario_inicio < partida.horario_inicio and horario_fim > partida.horario_termino):
+                    return Response({"Situação": "Conflito de horarios entre partidas."})
+                
+        
+        valor_final = aux_partida.valor_final
+        residencia = CentroPoliesportivo.objects.get(pk=id_ctpol).residencia.pk
 
-# def disponibilidade(data, horario_inicio, horario_fim, ct, modalidade):
-#     partidas = AgendamentoPartida.objects.filter(data=data, centro_poliesportivo=ct)
+        partida_atual = {
+            "lider_partida": id_user,
+            "centro_poliesportivo": id_ctpol,
+            "modalidade": modalidade,
+            "residencia": residencia,
+            "data": data_partida,
+            "horario_inicio": horario_inicio_original,
+            "horario_termino": horario_fim_original,
+            "valor_final": valor_final,
+        }
 
-#     quantidade_partidas_dia = 0
-#     quantidade_quadras = len(Quadra.objects.filter(modalidade=modalidade, ct_pol=ct))
+        s_partida_atual = AgendamentoPartidaSerializers(data=partida_atual)
+        if not s_partida_atual.is_valid():
+            return Response({"Erro no cadastro da partida": s_partida_atual.errors}, status=status.HTTP_400_BAD_REQUEST)
+        p = s_partida_atual.save()
 
-#     horario_inicio = datetime.strptime(horario_inicio, "%H:%M:%S").time()
-#     horario_fim = datetime.strptime(horario_fim, "%H:%M:%S").time()
+        partida_id = p.id
+
+        for s in jogadores:
+            s_usuario_partida = UsuarioAgendamentoSerializers(data={"usuario": s, "agendamento_partida": partida_id})
+            if not s_usuario_partida.is_valid():
+                return Response({"Erro no cadastro dos jogadores na partida": s_usuario_partida.errors}, status=status.HTTP_400_BAD_REQUEST)
+            s_usuario_partida.save()
 
 
-#     if partidas:
-#         for partida in partidas:
-#             if (horario_fim > partida.horario_inicio) or (horario_inicio < partida.horario_fim):
-#                 quantidade_partidas_dia = quantidade_partidas_dia + 1
+        return Response({"Cadastro feito": s_partida_atual.data})
 
-#     if quantidade_quadras > quantidade_partidas_dia:
-#         return 1
-#     elif quantidade_quadras <= 0:
-#         return -2
-#     else: 
-#         return -1
+
+@permission_classes([IsAuthenticated])
+@api_view(['GET'])
+def partida_detalhe(request, id):
+    if not request.user.groups.filter(name="jogador").exists():
+        return Response({"Situação": "Permissão negada."})
+    
+    if request.method == 'GET':
+        partida = AgendamentoPartida.objects.get(pk=id)
+        jogadores = UsuarioAgendamento.objects.filter(agendamento_partida=id)
+        lider_info = Usuario.objects.filter(user=partida.lider_partida.id).first()
+
+        jogadores_info = []
+
+        for j in jogadores:
+            jog = Usuario.objects.filter(user=j.id).first()
+            jogadores_info.append(jog.__str__())
+
+        p = {
+            "lider": lider_info.__str__(),
+            "data": partida.data,
+            "inicio": partida.horario_inicio,
+            "fim": partida.horario_termino,
+            "modalidade": partida.modalidade.__str__(),
+            "residencia": partida.residencia.__str__(),
+            "ct": partida.centro_poliesportivo.__str__(),
+            "valor": partida.valor_final,
+            "jogadores": jogadores_info
+        }
+
+        return Response(p)
