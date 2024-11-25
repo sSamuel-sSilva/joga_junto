@@ -26,18 +26,58 @@
     <ion-card>
       
       <ion-card-header>
-        <ion-card-title style="font-size: 20px;">Infomações adicionais</ion-card-title>
+        <ion-card-title style="font-size: 20px; color: black;">Infomações adicionais</ion-card-title>
       </ion-card-header>
       
       <ion-card-content>
-        
-        <ion-grid *ngFor="let p of periodos_func;" [fixed]="true">
-          <ion-row>
-            <ion-col size="6">{{ p.dia_da_semana }}</ion-col>
-            <ion-col size="6">{{ p.horario_abertura }} - {{ p.horario_fechamento }}</ion-col>
-          </ion-row>
-        </ion-grid>
 
+        <div class="tableas">
+          <h2><strong>Períodos de Funcionamento</strong></h2>
+          <table>
+            <tr>
+              <th>Dia</th>
+              <th>Horário</th>
+            </tr>
+            
+            <tr *ngFor="let p of periodos_func;">
+              <td>{{ p.dia_da_semana }}</td>
+              <td>{{ p.horario_abertura }} - {{ p.horario_fechamento }}</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="tableas">
+          <h2><strong>Modalidades e Quadras</strong></h2>
+          <table>
+            <tr>
+              <th>Modalidade</th>
+              <th>Quadras</th>
+            </tr>
+            
+            <tr *ngFor="let q of quadra_quant;">
+              <td>{{ q.modalidade }}</td>
+              <td>{{ q.quantidade }}</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="tableas">
+          <h2><strong>Tabela de Valores</strong></h2>
+          <table>
+            <tr>
+              <th>Modalidade</th>
+              <th>Jogadores</th>
+              <th>Preço</th>
+            </tr>
+            
+            <tr *ngFor="let a of aux_partida;">
+              <td>{{ a.modalidade }}</td>
+              <td>{{ a.quantidade_minima }}</td>
+              <td>R${{ a.valor_final }}</td>
+            </tr>
+          </table>
+        </div>
+          
       </ion-card-content>
     </ion-card>
   </div>

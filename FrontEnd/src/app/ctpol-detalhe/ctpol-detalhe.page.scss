@@ -10,6 +10,12 @@ ion-content {
 
 ion-card {
     width: 95%;
+    background-color: #ffffff;
+    color: black;
+}
+
+ion-card-content {
+    padding: 5px;
 }
 
 ion-grid {
@@ -19,6 +25,26 @@ ion-grid {
 ion-col {
     text-align: center;
 }
+
+table {
+    width: 100%;
+}
+
+tr {
+    margin-top: 10px;
+}
+
+h2 {
+    margin-bottom: 10px;
+}
+
+.tableas {
+    border-radius: 15px;
+    border: 1px solid gray;
+    margin-bottom: 15px;
+    padding: 10px;
+}
+
 
 .cabecalho {
     background-color: #d5d7d6;
