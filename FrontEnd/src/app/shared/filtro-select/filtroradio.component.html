@@ -1,0 +1,29 @@
+<ion-header>
+    <ion-toolbar color="light">
+        <ion-buttons slot="start">
+            <ion-button color="danger" (click)="cancel()" [strong]="true">Cancelar</ion-button>
+            </ion-buttons>
+            <!-- <ion-title>Welcome</ion-title> -->
+            <ion-buttons slot="end">
+            <ion-button color="success" (click)="confirm()" [strong]="true">Confirmar</ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+    <ion-toolbar color="light">
+      <ion-searchbar (ionInput)="entrada_pesquisa($event)" color="light"></ion-searchbar>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <ion-radio-group color="light" [(ngModel)]="selecionado" [allowEmptySelection]="true">
+    
+    <ion-list color="light" [inset]="true" color="light">
+      <ion-item *ngFor="let item of itens_filtrados; trackBy: procurar_item" color="light">
+        <ion-radio [value]="item.id">{{ item.value }}</ion-radio>
+      </ion-item>
+    </ion-list>
+  
+    </ion-radio-group>
+
+  </ion-content>
+  

@@ -1,0 +1,71 @@
+ion-content {
+    --background: #2D2F2D;
+    padding: 20px;
+    // justify-content: center;
+    // align-items: center;
+    // text-align: center;
+    // display: flex;
+    // flex-direction: column;
+}
+
+ion-card {
+    width: 95%;
+}
+
+ion-grid {
+    --ion-grid-padding: 20px;
+}
+
+ion-col {
+    text-align: center;
+}
+
+.cabecalho {
+    background-color: #d5d7d6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    flex-direction: column;
+    margin: 15px;
+    border-radius: 10px;
+}
+
+.infos {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: transparent;
+    border-radius: 5px;
+    margin: 0px 15px 0px 15px;
+    color: black;
+    font-size: 18px;
+}
+
+.descricao {
+    padding: 15px;
+}
+
+img {
+    border-radius: 50%;
+    object-fit: cover;    
+}
+
+
+
+
+
+
+
+
+.logo_kickmatch
+{
+    width: 200px;
+    height: 200px;
+    margin: auto;
+    margin-top: 20px;
+    border-radius: 50%;
+    object-fit: cover;
+}

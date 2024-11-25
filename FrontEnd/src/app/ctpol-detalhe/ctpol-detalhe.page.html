@@ -1,0 +1,53 @@
+<ion-toolbar style="--background: #2D2F2D;">
+  <ion-buttons slot="start" style="--background: #2D2F2D;">
+    <ion-button (click)="openMenu()" style="--background: #2D2F2D;">
+      <ion-icon slot="icon-only" name="menu"></ion-icon>
+    </ion-button>
+  </ion-buttons>
+</ion-toolbar>
+
+<ion-content [fullscreen]="true">
+
+  <div class="cabecalho">
+    <div class="infos">
+      <ion-thumbnail class="logo_kickmatch">
+        <img alt="Logo KickMatch" src="../../assets/static/ct.jpg" />
+      </ion-thumbnail>
+      <div class="infos_texto">
+        <p>{{ctpol?.nome}}</p>
+        <p><ion-icon name="star" style="margin-right: 5px;" color="warning"> </ion-icon>{{ctpol?.avaliacao}}</p>
+        <p><ion-icon name="location-outline" style="margin-right: 10px;"></ion-icon>{{ctpol?.residencia}}, {{ctpol?.rua}} - N° {{ctpol?.numero}}</p>
+        <p><ion-icon name="call-outline" style="margin-right: 10px;"></ion-icon>{{ctpol?.contato}}</p>
+        <p style="margin-top: 10px;" class="descricao"
+        >{{ctpol?.descricao}}</p>
+      </div>
+    </div>
+    
+    <ion-card>
+      
+      <ion-card-header>
+        <ion-card-title style="font-size: 20px;">Infomações adicionais</ion-card-title>
+      </ion-card-header>
+      
+      <ion-card-content>
+        
+        <ion-grid *ngFor="let p of periodos_func;" [fixed]="true">
+          <ion-row>
+            <ion-col size="6">{{ p.dia_da_semana }}</ion-col>
+            <ion-col size="6">{{ p.horario_abertura }} - {{ p.horario_fechamento }}</ion-col>
+          </ion-row>
+        </ion-grid>
+
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
+
+<!-- 
+<ion-item >
+  <div>
+    <p> {{ a.modalidade }} </p>
+    <p> {{ a.quantidade_minima }} </p>
+    <p> {{ a.valor_final }} </p>
+  </div>
+</ion-item> -->
