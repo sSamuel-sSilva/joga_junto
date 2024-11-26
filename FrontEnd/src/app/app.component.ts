@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -6,11 +8,10 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
 
-  public appPages = [
-    { title: 'Perfil', url: '/folder/inbox', icon: 'person-outline' },
-    { title: 'Criar Partida', url: '/folder/outbox', icon: 'add-outline' },
-    { title: 'Pesquisar Partida', url: '/folder/favorites', icon: 'search-outline' },
-    { title: 'LogOut', url: '/folder/favorites', icon: 'log-out-outline' },
-  ];
-  constructor() {}
+  constructor(private roteante: Router) {}
+
+  redirecionar(rota: string)
+  {
+    this.roteante.navigate([`/${rota}`]);
+  }
 }

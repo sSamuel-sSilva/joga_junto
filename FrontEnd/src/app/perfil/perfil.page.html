@@ -1,0 +1,105 @@
+<ion-header>
+  <ion-toolbar style="--background: #2D2F2D;">
+    <ion-buttons style="--background: #2D2F2D;">
+      
+      <ion-button (click)="openMenu()" style="--background: #2D2F2D;" slot="end">
+        <ion-icon slot="icon-only" name="menu"></ion-icon>
+      </ion-button>
+  
+      <ion-button id="click-trigger" slot="start">
+        <ion-icon name="apps-outline"></ion-icon>
+      </ion-button>
+
+      <ion-button (click)="voltar()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+      
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-popover trigger="click-trigger" triggerAction="click">
+  <ng-template>
+    <ion-content class="popover">
+      
+      <ion-button expand="full"  style="--background: rgba($color: #78787, $alpha: 0.5)">
+        <ion-icon name="build-outline" style="margin-right: 10px;"></ion-icon>Configurações
+      </ion-button>
+
+      <ion-button expand="full"  style="--background: rgba($color: #78787, $alpha: 0.5)">
+        <ion-icon name="lock-closed-outline" style="margin-right: 10px;"></ion-icon>Alterar Senha
+      </ion-button>
+
+      <ion-button expand="full"  style="--background: rgba($color: #78787, $alpha: 0.5)" id="present-alert">
+        <ion-icon name="log-out-outline" style="margin-right: 10px;"></ion-icon>Sair
+      </ion-button>
+
+      <ion-alert
+        trigger="present-alert"
+        header="Sair do App"
+        message="Você tem certeza que deseja sair do aplicativo?"
+        [buttons]="alertButtons"
+        (didDismiss)="logout($event)">
+      </ion-alert>
+      
+    </ion-content>
+  </ng-template>
+</ion-popover>
+
+
+<ion-content [fullscreen]="true">
+
+  <div class="cabecalho">
+    <div>
+      <ion-thumbnail slot="start" class="perfil">
+        <img alt="Foto Perfil" src="../../assets/static/perfil.png" />
+      </ion-thumbnail>
+    </div>
+    <h3>{{ perfil?.nome_completo }}</h3>
+    
+    <ion-card style="border: 2px solid #00FFA6;" color="light">
+      
+      <ion-card-header>
+        <ion-card-title style="font-size: 25px; color: black;">Infomações</ion-card-title>
+      </ion-card-header>
+      
+      <ion-card-content>
+        <table>
+          <tr>
+            <p> <ion-icon name="calendar-number-outline" style="margin-right: 10px;"></ion-icon><strong>Idade</strong> </p>
+            <p>{{ idade }} anos</p>
+          </tr>
+          <tr>
+            <p><ion-icon name="mail-outline" style="margin-right: 10px;"></ion-icon><strong>Email</strong> </p>
+            <p>{{ perfil?.email }}</p>
+          </tr>
+          <tr>
+            <p><ion-icon name="call-outline" style="margin-right: 10px;"></ion-icon><strong>Contato</strong> </p>
+            <p>{{ perfil?.contato }}</p>
+          </tr>
+          <tr>
+            <p><ion-icon name="location-outline" style="margin-right: 10px;"></ion-icon><strong>Localidade</strong> </p>
+            <p>{{ perfil?.residencia }}</p>
+          </tr>
+          <tr>
+            <p><ion-icon name="checkmark-outline" style="margin-right: 10px;"></ion-icon><strong>Partidas Concluídas</strong> </p>
+            <p>{{ perfil?.partidas_concluidas }}</p>
+          </tr>
+      </table>
+
+      <p><strong>Modalidades Preferidas: </strong></p>
+      <p *ngFor="let m of modalidades;">{{ m }}</p>
+
+      </ion-card-content>
+    </ion-card>
+    
+  </div>
+  
+</ion-content>
+
+
+<!-- <tr><th><ion-icon name="calendar-number-outline" style="margin-right: 10px;"></ion-icon>Idade</th><td>{{ perfil?.data_nascimento }}</td></tr>
+<tr><th><ion-icon name="mail-outline" style="margin-right: 10px;"></ion-icon>Email</th><td>{{ perfil?.email }}</td></tr>
+<tr><th><ion-icon name="mail-outline" style="margin-right: 10px;"></ion-icon>Contato</th><td>{{ perfil?.contato }}</td></tr>
+<tr><th><ion-icon name="mail-outline" style="margin-right: 10px;"></ion-icon>Localidade</th><td>{{ perfil?.residencia }}</td></tr>
+<tr><th><ion-icon name="checkmark-outline" style="margin-right: 10px;"></ion-icon>Partidas Concluídas</th><td>{{ perfil?.partidas_concluidas }}</td></tr> -->

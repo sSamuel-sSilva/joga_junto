@@ -1,8 +1,14 @@
 <ion-toolbar style="--background: #2D2F2D;">
-  <ion-buttons slot="start" style="--background: #2D2F2D;">
+  <ion-buttons style="--background: #2D2F2D;">
+    
     <ion-button (click)="openMenu()" style="--background: #2D2F2D;">
       <ion-icon slot="icon-only" name="menu"></ion-icon>
     </ion-button>
+    
+    <ion-button (click)="voltar()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </ion-button>
+
   </ion-buttons>
 </ion-toolbar>
 
@@ -23,7 +29,7 @@
       </div>
     </div>
     
-    <ion-card>
+    <ion-card color="light" style="border: 2px solid #00FFA6;">
       
       <ion-card-header>
         <ion-card-title style="font-size: 20px; color: black;">Infomações adicionais</ion-card-title>

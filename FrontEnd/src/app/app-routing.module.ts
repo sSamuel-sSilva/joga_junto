@@ -23,6 +23,10 @@ const routes: Routes = [
   {
     path: 'ctpol-detalhe/:id',
     loadChildren: () => import('./ctpol-detalhe/ctpol-detalhe.module').then( m => m.CtpolDetalhePageModule)
+  },
+  {
+    path: 'perfil',
+    loadChildren: () => import('./perfil/perfil.module').then( m => m.PerfilPageModule)
   }
 ];
 

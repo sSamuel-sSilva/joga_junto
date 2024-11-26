@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CtPol } from '../types/ctpol';
 import { Quadra } from '../types/quadra';
 import { PeriodoFuncionamento } from '../types/periodo_funcionamento';
 import { AuxPartida } from '../types/aux_partida';
 import { ApiCtpolDetalheService } from './api-ctpol-detalhe.service';
-import { MenuController } from '@ionic/angular';
+import { IonRouterOutlet, MenuController } from '@ionic/angular';
+import { Location } from '@angular/common';
+
 
 @Component({
   selector: 'app-ctpol-detalhe',
@@ -22,13 +24,24 @@ export class CtpolDetalhePage implements OnInit {
   aux_partida: AuxPartida[] = [];
   quadra_quant: { modalidade: string; quantidade: number }[] = [];
 
-  constructor(private route: ActivatedRoute, private ApiCtpolDetalheService: ApiCtpolDetalheService, private menuCtrl: MenuController) { }
+  constructor(private route: ActivatedRoute, private ApiCtpolDetalheService: ApiCtpolDetalheService, private menuCtrl: MenuController, private local: Location, private roteante: Router) { }
 
   ngOnInit() 
   {
+    this.esta_logado();
     this.id = +this.route.snapshot.paramMap.get('id')!;
     console.log("Peguei o id: " + this.id);
     this.puxar_ctpol()
+  }
+
+  esta_logado()
+  {
+    const token = localStorage.getItem("token");
+    console.log(token);
+    if (!token)
+    {
+      this.roteante.navigate(['/login']);
+    }
   }
 
   puxar_ctpol()
@@ -96,5 +109,9 @@ export class CtpolDetalhePage implements OnInit {
     });
 
     return Object.entries(contagem).map(([modalidade, quantidade]) => ({ modalidade, quantidade }));
+  }
+
+  voltar(): void {
+    this.local.back();
   }
 }

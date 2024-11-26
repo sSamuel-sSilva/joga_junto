@@ -117,3 +117,21 @@
 // ion-item.selected {
 //   --color: var(--ion-color-primary);
 // }
+
+ion-menu {
+    // background-color: #1B825D;
+    width: 100%;
+}
+
+ion-list {
+    background-color: #1B825D;
+    height: 100vh;
+    padding: 3px;
+}
+
+.item {
+    text-align: left;
+    justify-content: flex-start;
+    margin-bottom: 5px;
+    width: 100%;
+}

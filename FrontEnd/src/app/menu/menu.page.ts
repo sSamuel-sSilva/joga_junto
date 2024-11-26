@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiMenuService } from './api-menu.service';
 import { CtpolVitrine } from '../types/ctpol_vitrine';
-import { MenuController } from '@ionic/angular';
+import { IonRouterOutlet, MenuController } from '@ionic/angular';
 import { Router } from '@angular/router';
 
 @Component({
@@ -19,8 +19,18 @@ export class MenuPage implements OnInit {
 
   ngOnInit() 
   {
-    console.log('ApiMenuService inicializado!');
-    this.puxar_ctpols_proximos()
+    this.esta_logado();
+    this.puxar_ctpols_proximos();
+  }
+
+  esta_logado()
+  {
+    const token = localStorage.getItem("token");
+    console.log(token);
+    if (!token)
+    {
+      this.roteante.navigate(['/login']);
+    }
   }
 
   puxar_ctpols_proximos()

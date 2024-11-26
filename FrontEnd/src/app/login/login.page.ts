@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { MenuController } from '@ionic/angular';
+import { IonInput, MenuController } from '@ionic/angular';
 import { ApiLoginService } from './api-login.service'; 
 import { Router } from '@angular/router';
+import { IonRouterOutlet } from '@ionic/angular';
 
 
 @Component({
@@ -17,16 +18,16 @@ export class LoginPage implements OnInit {
   username:string = "";
   password:string = "";
 
-  constructor(private ApiLoginService: ApiLoginService, private menuCtrl: MenuController, private roteante: Router) { }
+  constructor(private routerOutlet: IonRouterOutlet, private ApiLoginService: ApiLoginService, private menuCtrl: MenuController, private roteante: Router) { }
 
   ngOnInit() {
     this.menuCtrl.enable(false);
+    this.routerOutlet.swipeGesture = false;
   }
 
   ionViewWillLeave() {
     this.menuCtrl.enable(true);
   }
-
 
   login()
   {
@@ -59,5 +60,10 @@ export class LoginPage implements OnInit {
     {
       this.mensagem_erro = mensagem;
     }
+  }
+
+  limparInput(input: IonInput)
+  {
+    input.value = '';
   }
 }
