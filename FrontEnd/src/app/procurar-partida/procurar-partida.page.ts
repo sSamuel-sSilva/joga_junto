@@ -7,7 +7,7 @@ import { ApiService } from '../api.service';
 import { IonModal, MenuController } from '@ionic/angular';
 import { Location } from '@angular/common';
 import { Router } from '@angular/router';
-
+ 
 
 @Component({
   selector: 'app-procurar-partida',
