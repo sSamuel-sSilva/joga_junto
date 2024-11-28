@@ -54,6 +54,12 @@ export class CadastroPage implements OnInit {
     this.puxar_modalidades();
     this.puxar_localidades();
   }
+  
+  ionViewWillEnter(): void 
+  {
+    this.puxar_modalidades();
+    this.puxar_localidades();
+  }
 
   ionViewWillLeave() {
     this.menuCtrl.enable(true);

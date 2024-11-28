@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import ModalidadeListCreate, ModalidadeRetrieveUpdateDestroy, CentroPoliesportivoListCreate, CentroPoliesportivoRetrieveUpdateDestroy, PeriodoFuncionamentoListCreate, PeriodoFuncionamentoRetrieveUpdateDestroy, QuadraListCreate, QuadraRetrieveUpdateDestroy, AuxPartidaListCreate, AuxPartidaSerializersRetrieveUpdateDestroy, ctpol_list_create, ctpol_detail, CidadeEstadoListCreate, CidadeEstadoRetrieveUpdateDestroy
+from .views import ModalidadeListCreate, ModalidadeRetrieveUpdateDestroy, CentroPoliesportivoListCreate, CentroPoliesportivoRetrieveUpdateDestroy, PeriodoFuncionamentoListCreate, PeriodoFuncionamentoRetrieveUpdateDestroy, QuadraListCreate, QuadraRetrieveUpdateDestroy, AuxPartidaListCreate, AuxPartidaSerializersRetrieveUpdateDestroy, ctpol_list_create, ctpol_detail, CidadeEstadoListCreate, CidadeEstadoRetrieveUpdateDestroy, ctpols_proximas
 
 urlpatterns = [
     path('modalidade/', ModalidadeListCreate.as_view(), name='modalidade-list-create'),
@@ -21,5 +21,8 @@ urlpatterns = [
     path('cidade_estado/<int:pk>/', CidadeEstadoRetrieveUpdateDestroy.as_view(), name='cidade_estado-rud'),
     
     path('ctpol_list_create/', view=ctpol_list_create, name='ctpol_list_create'),
-    path('ctpol_detail/<int:pk>', view=ctpol_detail, name='ctpol_detail')
+    path('ctpol_detail/<int:pk>', view=ctpol_detail, name='ctpol_detail'),
+    path('ctpols_prox/', view=ctpols_proximas, name='ctpols_proximas'),
+    
+
 ]    

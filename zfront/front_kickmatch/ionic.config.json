@@ -1,7 +1,0 @@
-{
-  "name": "front_kickmatch",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "angular"
-}

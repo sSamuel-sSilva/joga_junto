@@ -41,7 +41,6 @@ export class TypeaheadComponent implements OnInit
         return item.value;
     }
 
-
     entrada_pesquisa(ev: any)
     {
         this.lista_filtragem(ev.target.value);

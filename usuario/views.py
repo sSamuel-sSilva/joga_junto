@@ -3,6 +3,8 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework import status
 from rest_framework import permissions
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.decorators import api_view
 from django.contrib.auth import authenticate
 from .serializers import UserSerializer, UsuarioSerializer, CidadeEstadoSerializer, UsuarioEsportesSerializer, serializers
@@ -64,6 +66,7 @@ class loginView(APIView):
             return Response({"erro": "credenciais inválidas"}, status=status.HTTP_401_UNAUTHORIZED)
 
 
+@permission_classes([IsAuthenticated])
 @api_view(['GET'])
 def visualizar_perfil(request):
     if not request.user.groups.filter(name="jogador").exists():
@@ -73,18 +76,24 @@ def visualizar_perfil(request):
         usuario = Usuario.objects.filter(user=request.user.id).first()
 
         if usuario:
+            
+            usuario__ = {
+                "nome_completo": usuario.nome_completo,
+                "email": usuario.email,
+                "data_nascimento": usuario.data_nascimento,
+                "partidas_concluidas": usuario.partidas_concluidas,
+                "contato": usuario.contato,
+                "residencia": usuario.residencia.__str__(),
+            }
+            
             modalidades = []
             
-            s_usuario = UsuarioSerializer(instance=usuario)
-            residencia = CidadeEstado.objects.get(pk=s_usuario['residencia'].value)
-            s_residencia = CidadeEstadoSerializer(instance=residencia)
-
             modals = UsuarioEsportes.objects.filter(usuario=usuario.id)
 
             for m in modals:
                 modalidades.append(m.esporte.modalidade)
 
 
-            return Response({"usuario": s_usuario.data, "residencia": s_residencia.data, "modalidades": modalidades})
+            return Response({"usuario": usuario__, "modalidades": modalidades})
         else:
             return Response({"Erro":"achei não"})

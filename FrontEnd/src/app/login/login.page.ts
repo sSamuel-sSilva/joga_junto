@@ -3,7 +3,7 @@ import { IonInput, MenuController } from '@ionic/angular';
 import { ApiLoginService } from './api-login.service'; 
 import { Router } from '@angular/router';
 import { IonRouterOutlet } from '@ionic/angular';
-
+// import { MaskitoDirective } from '@maskito/angular';
 
 @Component({
   selector: 'app-login',
@@ -39,6 +39,10 @@ export class LoginPage implements OnInit {
         (response: any) => {
           console.log(response);
           localStorage.setItem('token', response.token);
+
+          this.username = '';
+          this.password = '';
+
           this.roteante.navigate(['/menu']);
 
         }, (error) => {

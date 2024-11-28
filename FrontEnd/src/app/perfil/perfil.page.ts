@@ -42,6 +42,12 @@ export class PerfilPage implements OnInit {
     this.puxar_perfil();
   }
 
+  ionViewWillEnter(): void 
+  {
+    this.esta_logado();
+    this.puxar_perfil();
+  }
+
   esta_logado()
   {
     const token = localStorage.getItem("token");

@@ -23,6 +23,7 @@
     </ion-card-header>
 
     <ion-card-content>
+      <div *ngIf="ctpols_proximos.length > 0; else sem_ctpols_proximos">
         <ion-button
         *ngFor="let ctpol of ctpols_proximos" 
         (click)="detalhado(ctpol.id)"
@@ -38,8 +39,14 @@
             <p>{{ ctpol.residencia }}</p>
             <p>{{ ctpol.rua }} - N°{{ ctpol.numero }}</p>
           </div>
-    
         </ion-button>
+      </div>
+
+      <ng-template #sem_ctpols_proximos>
+        <div class="sem_ctpols_proximos">
+          <h2 style="font-size: 17px; color: red;">Sem CTs cadastrados na sua cidade!</h2>
+        </div>
+      </ng-template>
     </ion-card-content>
     
   </ion-card>

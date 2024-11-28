@@ -34,6 +34,12 @@ export class CtpolDetalhePage implements OnInit {
     this.puxar_ctpol()
   }
 
+  ionViewWillEnter(): void 
+  {
+    this.esta_logado();
+    this.puxar_ctpol()
+  }
+
   esta_logado()
   {
     const token = localStorage.getItem("token");

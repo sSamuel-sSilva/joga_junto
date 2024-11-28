@@ -27,6 +27,10 @@ const routes: Routes = [
   {
     path: 'perfil',
     loadChildren: () => import('./perfil/perfil.module').then( m => m.PerfilPageModule)
+  },
+  {
+    path: 'procurar-partida',
+    loadChildren: () => import('./procurar-partida/procurar-partida.module').then( m => m.ProcurarPartidaPageModule)
   }
 ];
 

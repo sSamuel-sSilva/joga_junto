@@ -10,21 +10,40 @@ from .models import Modalidade, PeriodoFuncionamento, CentroPoliesportivo, Quadr
 from .serializers import ModalidadeSerializer, PeriodoFuncionamentoSerializer, CentroPoliesportivoSerializer, QuadraSerializer, AuxPartidaSerializer
 from usuario.serializers import UsuarioCentroPoliesportivoSerializer, CidadeEstadoSerializer
 from django.views.decorators.csrf import csrf_exempt
-from usuario.models import UsuarioCentroPoliesportivo
+from usuario.models import UsuarioCentroPoliesportivo, Usuario
 
 
 class ModalidadeListCreate(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
 
-    queryset = Modalidade.objects.all()
+    queryset = Modalidade.objects.all().order_by('modalidade');
     serializer_class = ModalidadeSerializer
          
 
 class CidadeEstadoListCreate(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
 
-    queryset = CidadeEstado.objects.all()
-    serializer_class = CidadeEstadoSerializer
+    def get(self, request):
+        queryset = CidadeEstado.objects.all().order_by('cidade')
+        serializer = CidadeEstadoSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        if isinstance(request.data, list):
+            serializer = CidadeEstadoSerializer(data=request.data, many=True)
+        else:
+            serializer = CidadeEstadoSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # permission_classes = [AllowAny]
+
+    # queryset = CidadeEstado.objects.all().order_by('cidade');
+    # serializer_class = CidadeEstadoSerializer
 
 
 class PeriodoFuncionamentoListCreate(generics.ListCreateAPIView):
@@ -55,13 +74,11 @@ class AuxPartidaListCreate(generics.ListCreateAPIView):
     serializer_class = AuxPartidaSerializer
 
 
-
 class ModalidadeRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [AllowAny]
 
     queryset = Modalidade.objects.all()
     serializer_class = ModalidadeSerializer
-
 
 
 class CidadeEstadoRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
@@ -78,13 +95,11 @@ class PeriodoFuncionamentoRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAP
     serializer_class = PeriodoFuncionamentoSerializer
 
 
-
 class CentroPoliesportivoRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     queryset = CentroPoliesportivo.objects.all()
     serializer_class = CentroPoliesportivoSerializer
-
 
 
 class QuadraRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
@@ -92,7 +107,6 @@ class QuadraRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = Quadra.objects.all()
     serializer_class = QuadraSerializer
-
 
 
 class AuxPartidaSerializersRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
@@ -120,9 +134,6 @@ def ctpol_list_create(request):
             ct = CentroPoliesportivo.objects.get(pk=c.ctpol.pk)
             ctpols.append(ct)
 
-        
-
-
         quant_ctpol = len(ctpols)
         json_ctpols = []
 
@@ -133,7 +144,7 @@ def ctpol_list_create(request):
             
             quadras = [
                 {
-                    "pk": q.pk, 
+                    "id": q.pk, 
                     "modalidade": q.modalidade.modalidade 
                 }
                     for q in qs_quadras
@@ -141,7 +152,7 @@ def ctpol_list_create(request):
 
             periodos_func = [
                 {
-                    "pk": pf.pk,
+                    "id": pf.pk,
                     "dia_da_semana": pf.dia_da_semana,
                     "horario_abertura": pf.horario_abertura.strftime("%H:%M:%S"),
                     "horario_fechamento": pf.horario_fechamento.strftime("%H:%M:%S")
@@ -152,7 +163,7 @@ def ctpol_list_create(request):
 
             aux_partida = [
                 {
-                    "pk": ap.pk,
+                    "id": ap.pk,
                     "modalidade" : ap.modalidade.modalidade,
                     "quantidade_minima": ap.quantidade_minima,
                     "valor_final": ap.valor_final
@@ -160,19 +171,11 @@ def ctpol_list_create(request):
                 for ap in qs_aux_partida
             ]
 
-            r_modelo = CidadeEstado.objects.get(pk=ctpols[i].residencia.pk)
-
-            residencia = {
-                "pk": r_modelo.pk,
-                "cidade": r_modelo.cidade,
-                "estado": r_modelo.estado
-            } 
-
             ctpol_atual = {
                 "ctpol": {
-                    "pk": ctpols[i].pk,
+                    "id": ctpols[i].pk,
                     "nome": ctpols[i].nome,
-                    "residencia": residencia,
+                    "residencia": ctpols[i].residencia.__str__(),
                     "numero": ctpols[i].numero,
                     "rua": ctpols[i].rua,
                     "quantidade_quadras": ctpols[i].quantidade_quadras,
@@ -189,6 +192,7 @@ def ctpol_list_create(request):
             json_ctpols.append(ctpol_atual)
 
         return Response(json_ctpols)
+        
 
     elif request.method == 'POST':
         if not request.user.groups.filter(name="dono_centro_poliesportivo").exists():
@@ -282,12 +286,9 @@ def ctpol_list_create(request):
         return Response({"status": "cadastrado com sucesso"}, status=status.HTTP_201_CREATED)
 
 
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 @api_view(['GET', 'PUT', 'DELETE'])
 def ctpol_detail(request, pk):
-
-    if not request.user.groups.filter(name="dono_centro_poliesportivo").exists():
-        return Response({"Situação": "Permissão negada."})
 
     if request.method == 'GET':
         ct_pol = get_object(pk, True)
@@ -295,6 +296,9 @@ def ctpol_detail(request, pk):
 
 
     if request.method == 'PUT':
+        if not request.user.groups.filter(name="dono_centro_poliesportivo").exists():
+            return Response({"Situação": "Permissão negada."})
+
         ct_pol_request = request.data
         ct_pol = CentroPoliesportivo.objects.get(pk=pk)
         ct_pol_request['ct_pol']["avaliacao"] = ct_pol.avaliacao
@@ -338,6 +342,8 @@ def ctpol_detail(request, pk):
         
     
     if request.method == 'DELETE':
+        if not request.user.groups.filter(name="dono_centro_poliesportivo").exists():
+            return Response({"Situação": "Permissão negada."})
         try:
             
             ct_pol = CentroPoliesportivo.objects.get(pk=pk)
@@ -360,17 +366,11 @@ def get_object(pk, get=False):
             raise Http404
         
         
-        r_modelo = CidadeEstado.objects.get(pk=ct_pol.residencia.pk)
-        residencia = {
-            "pk": r_modelo.pk,
-            "cidade": r_modelo.cidade,
-            "estado": r_modelo.estado
-        } 
 
         obj_json["ct_pol"] = {
-            "pk": ct_pol.pk,
+            "id": ct_pol.pk,
             "nome": ct_pol.nome,
-            "residencia": residencia,
+            "residencia": ct_pol.residencia.__str__(),
             "numero": ct_pol.numero,
             "rua": ct_pol.rua,
             "quantidade_quadras": ct_pol.quantidade_quadras,
@@ -381,7 +381,7 @@ def get_object(pk, get=False):
 
         obj_json["quadras"] = [
             {
-                "pk": q.pk,
+                "id": q.pk,
                 "modalidade": q.modalidade.modalidade
             }
             for q in list(Quadra.objects.filter(ct_pol=pk))
@@ -389,7 +389,7 @@ def get_object(pk, get=False):
 
         obj_json["periodos_func"] = [   
             {
-                "pk": pf.pk,
+                "id": pf.pk,
                 "dia_da_semana": pf.dia_da_semana,
                 "horario_abertura": pf.horario_abertura.strftime("%H:%M:%S"),
                 "horario_fechamento": pf.horario_fechamento.strftime("%H:%M:%S")
@@ -398,7 +398,7 @@ def get_object(pk, get=False):
 
         obj_json["aux_partida"] = [
                 {
-                    "pk": ap.pk,
+                    "id": ap.pk,
                     "modalidade" : ap.modalidade.modalidade,
                     "quantidade_minima": ap.quantidade_minima,
                     "valor_final": ap.valor_final
@@ -424,3 +424,27 @@ def get_object(pk, get=False):
     
     return obj_json
         
+
+
+@permission_classes([IsAuthenticated])
+@api_view(['GET'])
+def ctpols_proximas(request):
+    if request.method == 'GET':
+        
+        user = request.user.id
+        usuario = Usuario.objects.filter(user=user).first()
+
+        ctpols_proximos_objetos = CentroPoliesportivo.objects.filter(residencia=usuario.residencia)[:5]
+
+        ctpols = [
+            {
+                "id": c.pk,
+                "nome": c.nome,
+                "residencia": c.residencia.__str__(),
+                "numero": c.numero,
+                "rua": c.rua,
+                "avaliacao": c.avaliacao
+            } for c in ctpols_proximos_objetos
+        ]
+
+        return Response({"ctpol": ctpols, "usuario": usuario.nome_completo})

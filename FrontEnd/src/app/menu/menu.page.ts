@@ -23,6 +23,12 @@ export class MenuPage implements OnInit {
     this.puxar_ctpols_proximos();
   }
 
+  ionViewWillEnter(): void 
+  {
+    this.esta_logado();
+    this.puxar_ctpols_proximos();
+  }
+
   esta_logado()
   {
     const token = localStorage.getItem("token");

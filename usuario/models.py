@@ -5,11 +5,11 @@ from centro_poliesportivo.models import CidadeEstado, Modalidade, CentroPoliespo
 class Usuario(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     nome_completo = models.CharField(max_length=255)
-    email = models.EmailField(max_length=255)
+    email = models.EmailField(max_length=255, unique=True)
     residencia = models.ForeignKey(CidadeEstado, on_delete=models.DO_NOTHING, null=True, blank=True)
     data_nascimento = models.DateField(null=True, blank=True)
     partidas_concluidas = models.IntegerField(null=True, blank=True)
-    contato = models.CharField(max_length=11)
+    contato = models.CharField(max_length=11, unique=True);
 
     def __str__(self):
         return self.nome_completo

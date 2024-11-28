@@ -1,5 +1,3 @@
-from django.shortcuts import render
-import json
 from rest_framework import status
 from rest_framework import generics
 from .models import AgendamentoPartida, UsuarioAgendamento
@@ -18,6 +16,7 @@ class AgendamentoPartidaListCreate(generics.ListCreateAPIView):
     queryset = AgendamentoPartida.objects.all()
     serializer_class = AgendamentoPartidaSerializers
 
+
 class AgendamentoPartidaRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [AllowAny]
 
@@ -30,6 +29,7 @@ class UsuarioAgendamentoListCreate(generics.ListCreateAPIView):
 
     queryset = UsuarioAgendamento.objects.all()
     serializer_class = UsuarioAgendamentoSerializers
+
 
 class UsuarioAgendamentoRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [AllowAny]
@@ -54,27 +54,49 @@ def cadastrar_listar_partida(request):
     if request.method == 'GET':
         dados = []
 
+        residencia_user = Usuario.objects.filter(user=request.user.id).first().residencia.id
+        
         ctpol = request.GET.get('ctpol')
         modalidade = request.GET.get('modalidade')
-        residencia = request.GET.get('residencia')
 
-        partidas = AgendamentoPartida.objects.all()
-        if ctpol:
-            partidas = AgendamentoPartida.objects.filter(centro_poliesportivo=ctpol)
+        print(ctpol, modalidade, residencia_user)
 
-        if modalidade:
+
+        partidas = AgendamentoPartida.objects.filter(residencia=residencia_user)
+        if not partidas:
+            return Response({"Situação": "Sem partidas encontradas na sua região."});
+
+
+        if ctpol and modalidade:
+            partidas = AgendamentoPartida.objects.filter(centro_poliesportivo=ctpol, modalidade=modalidade)
+
+        elif modalidade:
             partidas = AgendamentoPartida.objects.filter(modalidade=modalidade)
 
-        if residencia:
-            partidas = AgendamentoPartida.objects.filter(residencia=residencia)
+        elif ctpol:
+            partidas = AgendamentoPartida.objects.filter(centro_poliesportivo=ctpol)
+        
+        if not partidas:
+            return Response({"Situação": "Sem partidas encontradas para essa filtragem."})
 
+
+        nesse_momento = datetime.now()
+        dia_desse_momento = nesse_momento.date()
+        hora_desse_momento = nesse_momento.time()
+
+        partidas = AgendamentoPartida.objects.filter(data__gt=dia_desse_momento, horario_inicio__gt=hora_desse_momento)
+
+        if not partidas:
+            return Response({"Situação": "Sem partidas encontradas nesse momento."})
+        
 
         for p in partidas:
+            dia_semana_partida = dia_semana(str(p.data))
 
             lider_info = Usuario.objects.filter(user=p.lider_partida.id).first()
             dados.append({
                 "lider": lider_info.nome_completo,
-                "data": p.data,
+                "data": f"{p.data}, {dia_semana_partida}",
                 "inicio": p.horario_inicio,
                 "fim": p.horario_termino,
                 "modalidade": p.modalidade.__str__(),
