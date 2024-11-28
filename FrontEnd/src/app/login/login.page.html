@@ -1,0 +1,63 @@
+<ion-content scrollY="false">
+
+  <div>
+    <ion-thumbnail slot="start" class="logo_kickmatch">
+      <img alt="Logo KickMatch" src="../../assets/static/logo_kickmatch.png" />
+    </ion-thumbnail>
+  </div>
+
+  
+  <ion-card color="light" style="border: 2px solid #00FFA6;">
+    <ion-card-header>
+      <ion-card-title>Login</ion-card-title>
+    </ion-card-header>
+    
+    <ion-card-content >
+      
+      <form (submit)="login()">
+        
+        <ion-item color="light">
+          <ion-input placeholder="" 
+                    #input
+                    type="text" 
+                    [(ngModel)]="username" 
+                    name="username" 
+                    [clearInput]="true"
+                    fill="outline" 
+                    required><ion-icon name="person-outline" style="margin-right: 10px;"></ion-icon>Username</ion-input>
+        </ion-item>
+        <br>
+        <ion-item color="light">
+          <ion-input placeholder="" 
+                    #input
+                    type="password"
+                    [(ngModel)]="password" 
+                    name="password" 
+                    [clearInput]="true"
+                    fill="outline"
+                    required><ion-icon name="lock-closed-outline" style="margin-right: 10px;"></ion-icon>Password</ion-input>
+        </ion-item>
+
+        <br>
+    
+        <ion-button expand="block" type="submit" color="dark" size="large">Entrar</ion-button>
+        <br>
+        <ion-router-link routerLink="/cadastro" 
+                        color="primary" 
+                        style="text-decoration: underline;
+                        font-size: 15px;"
+                        >Sem conta? Cadastre-se aqui!</ion-router-link>
+
+      </form>
+
+      <ion-toast
+        [isOpen]="dados_validos"
+        [message]="mensagem_erro"
+        [duration]="2000"
+        (didDismiss)="m_torrada(false, '')"
+        color="danger"
+      ></ion-toast>
+
+    </ion-card-content>
+  </ion-card>
+</ion-content>

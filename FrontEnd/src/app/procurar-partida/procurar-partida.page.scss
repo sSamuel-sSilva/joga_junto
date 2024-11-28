@@ -1,0 +1,29 @@
+ion-content {
+    --background: #2D2F2D;
+    padding: 20px;
+}
+
+.sem_partida {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+ion-buttons {
+    justify-content: space-between;
+}
+
+ion-card {
+    height: 90%;
+    padding: 25px;
+    overflow-y: auto;
+}
+
+.partida {
+    margin-bottom: 10px;
+    box-shadow: 0 5px 6px 0 rgb(0, 0, 0, 0.30);
+    padding: 10px;
+    background: #a5a5a5;
+    border-radius: 10px;
+}

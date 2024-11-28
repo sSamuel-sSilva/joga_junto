@@ -1,0 +1,6 @@
+ion-checkbox {
+    --border-color: rgb(123, 123, 145); 
+    --border-width: 1px;
+    --checkbox-background: transparent;
+    --checkmark-color: rgb(0, 0, 0);
+}

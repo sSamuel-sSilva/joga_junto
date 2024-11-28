@@ -1,0 +1,98 @@
+ion-content {
+    --background: #2D2F2D;
+    padding: 20px;
+    // justify-content: center;
+    // align-items: center;
+    // text-align: center;
+    // display: flex;
+    // flex-direction: column;
+}
+
+ion-card {
+    width: 95%;
+    color: black;
+}
+
+ion-card-content {
+    padding: 5px;
+}
+
+ion-grid {
+    --ion-grid-padding: 20px;
+}
+
+ion-col {
+    text-align: center;
+}
+
+table {
+    width: 100%;
+}
+
+tr {
+    margin-top: 10px;
+}
+
+h2 {
+    margin-bottom: 10px;
+}
+
+th {
+    width: 50%;
+}
+
+.tableas {
+    border-radius: 15px;
+    border: 1px solid gray;
+    margin-bottom: 15px;
+    padding: 10px;
+}
+
+ion-buttons {
+    justify-content: space-between;
+}
+
+.cabecalho {
+    // background-color: #d5d7d6;#1B825D
+    background-color: #1B825D;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    flex-direction: column;
+    margin: 15px;
+    border-radius: 10px;
+}
+
+.infos {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: white;
+    align-items: center;
+    text-align: center;
+    background-color: transparent;
+    border-radius: 5px;
+    margin: 0px 15px 0px 15px;
+    // color: black;
+    font-size: 18px;
+}
+
+.descricao {
+    padding: 15px;
+}
+
+img {
+    border-radius: 50%;
+    object-fit: cover;    
+}
+
+.logo_kickmatch
+{
+    width: 200px;
+    height: 200px;
+    margin: auto;
+    margin-top: 20px;
+    border-radius: 50%;
+    object-fit: cover;
+}

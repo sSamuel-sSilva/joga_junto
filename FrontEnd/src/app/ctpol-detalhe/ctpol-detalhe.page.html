@@ -1,0 +1,90 @@
+<ion-toolbar style="--background: #2D2F2D;">
+  <ion-buttons style="--background: #2D2F2D;">
+    
+    <ion-button (click)="openMenu()" style="--background: #2D2F2D;">
+      <ion-icon slot="icon-only" name="menu"></ion-icon>
+    </ion-button>
+    
+    <ion-button (click)="voltar()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </ion-button>
+
+  </ion-buttons>
+</ion-toolbar>
+
+<ion-content [fullscreen]="true">
+
+  <div class="cabecalho">
+    <div class="infos">
+      <ion-thumbnail class="logo_kickmatch">
+        <img alt="Logo KickMatch" src="../../assets/static/ct.jpg" />
+      </ion-thumbnail>
+      <div class="infos_texto">
+        <p>{{ctpol?.nome}}</p>
+        <p><ion-icon name="star" style="margin-right: 5px;" color="warning"> </ion-icon>{{ctpol?.avaliacao}}</p>
+        <p><ion-icon name="location-outline" style="margin-right: 10px;"></ion-icon>{{ctpol?.residencia}}, {{ctpol?.rua}} - N° {{ctpol?.numero}}</p>
+        <p><ion-icon name="call-outline" style="margin-right: 10px;"></ion-icon>{{ctpol?.contato}}</p>
+        <p style="margin-top: 10px;" class="descricao"
+        >{{ctpol?.descricao}}</p>
+      </div>
+    </div>
+    
+    <ion-card color="light" style="border: 2px solid #00FFA6;">
+      
+      <ion-card-header>
+        <ion-card-title style="font-size: 20px; color: black;">Infomações adicionais</ion-card-title>
+      </ion-card-header>
+      
+      <ion-card-content>
+
+        <div class="tableas">
+          <h2><strong>Períodos de Funcionamento</strong></h2>
+          <table>
+            <tr>
+              <th>Dia</th>
+              <th>Horário</th>
+            </tr>
+            
+            <tr *ngFor="let p of periodos_func;">
+              <td>{{ p.dia_da_semana }}</td>
+              <td>{{ p.horario_abertura }} - {{ p.horario_fechamento }}</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="tableas">
+          <h2><strong>Modalidades e Quadras</strong></h2>
+          <table>
+            <tr>
+              <th>Modalidade</th>
+              <th>Quadras</th>
+            </tr>
+            
+            <tr *ngFor="let q of quadra_quant;">
+              <td>{{ q.modalidade }}</td>
+              <td>{{ q.quantidade }}</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="tableas">
+          <h2><strong>Tabela de Valores</strong></h2>
+          <table>
+            <tr>
+              <th>Modalidade</th>
+              <th>Jogadores</th>
+              <th>Preço</th>
+            </tr>
+            
+            <tr *ngFor="let a of aux_partida;">
+              <td>{{ a.modalidade }}</td>
+              <td>{{ a.quantidade_minima }}</td>
+              <td>R${{ a.valor_final }}</td>
+            </tr>
+          </table>
+        </div>
+          
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

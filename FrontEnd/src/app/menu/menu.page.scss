@@ -1,0 +1,48 @@
+ion-content {
+    --background: #2D2F2D;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+ion-header, ion-toolbar, ion-button {
+    --background: #2D2F2D;
+}
+
+ion-card {
+    --background: #1B825D;
+    height: 55%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+ion-list {
+    background-color: transparent;
+}
+
+.ctpol {
+    width: 100% !important;
+    display: flex;
+    flex-direction: column;
+}
+
+.logo_kickmatch
+{
+    width: 50%;
+    height: auto;
+    margin: auto;
+    margin-top: 50px;
+}
+
+.sem_ctpols_proximos {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}

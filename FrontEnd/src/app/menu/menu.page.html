@@ -1,0 +1,54 @@
+<ion-header>
+  <ion-toolbar style="--background: #2D2F2D;">
+    <ion-buttons slot="start" style="--background: #2D2F2D;">
+      <ion-button (click)="openMenu()" style="--background: #2D2F2D;">
+        <ion-icon slot="icon-only" name="menu"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Bem vindo, {{ nome_usuario }}!</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" scrollY="false">  
+  <div>
+    <ion-thumbnail slot="start" class="logo_kickmatch">
+      <img alt="Logo KickMatch" src="../../assets/static/logo_kickmatch.png" />
+    </ion-thumbnail>
+  </div>
+
+  <ion-card>
+
+    <ion-card-header>
+      <ion-card-title style="font-size: 22px;">CTs próximos de você</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <div *ngIf="ctpols_proximos.length > 0; else sem_ctpols_proximos">
+        <ion-button
+        *ngFor="let ctpol of ctpols_proximos" 
+        (click)="detalhado(ctpol.id)"
+        style=
+        "width: 100%;
+        --box-shadow: 0 5px 6px 0 rgb(0, 0, 0, 0.30);
+        margin-bottom: 8px;"
+        color="light">
+      
+          <div class="ctpol">
+            <h2>{{ ctpol.nome }} - <ion-icon name="star" style="margin-right: 5px;" color="warning"></ion-icon>{{ ctpol.avaliacao }}</h2>
+            <br>
+            <p>{{ ctpol.residencia }}</p>
+            <p>{{ ctpol.rua }} - N°{{ ctpol.numero }}</p>
+          </div>
+        </ion-button>
+      </div>
+
+      <ng-template #sem_ctpols_proximos>
+        <div class="sem_ctpols_proximos">
+          <h2 style="font-size: 17px; color: red;">Sem CTs cadastrados na sua cidade!</h2>
+        </div>
+      </ng-template>
+    </ion-card-content>
+    
+  </ion-card>
+  
+</ion-content>
